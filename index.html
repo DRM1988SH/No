@@ -530,7 +530,7 @@
 
         .input-form-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 20px;
         }
 
@@ -538,31 +538,70 @@
             margin-top: 20px;
         }
 
-        /* تنسيقات متجاوبة */
-        @media (max-width: 1200px) {
-            .input-form-container {
-                grid-template-columns: 1fr;
-            }
-            
+        /* تعديلات الطباعة */
+        .invoice-print {
+            width: 7in;
+            height: 5in;
+            padding: 0.2in;
+            border: 1px solid #000;
+            margin: 0 auto;
+            direction: rtl;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* نافذة معاينة الطباعة */
+        .print-preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .print-preview-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            height: 80%;
+            overflow: auto;
+            position: relative;
+        }
+
+        .close-preview {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--red-btn-bg);
+            color: var(--red-btn-color);
+            border: 2px solid var(--red-btn-color);
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        /* تحسينات للجوال */
+        @media (max-width: 768px) {
             .btn {
-                font-size: 16px;
                 min-width: 120px;
+                font-size: 16px;
+                padding: 0 15px;
                 height: 45px;
             }
             
             input, select, textarea {
                 font-size: 16px;
                 height: 45px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .app {
                 padding: 10px;
             }
             
-            .screen {
-                padding: 15px;
+            .img200 {
+                height: 150px;
             }
             
             .topnav {
@@ -570,49 +609,23 @@
                 align-items: center;
             }
             
+            .row {
+                flex-direction: column;
+            }
+            
             .grid.g2, .grid.g3, .grid.g4 {
                 grid-template-columns: 1fr;
             }
-            
-            .img200 {
-                height: 150px;
-            }
-            
-            table {
-                font-size: 14px;
-            }
-            
-            thead th {
-                padding: 8px;
-                font-size: 16px;
-            }
-            
-            tbody td {
-                padding: 6px;
-            }
         }
 
-        /* تنسيقات للطباعة */
-        .invoice-print {
-            width: 7in; /* 7 بوصة طول */
-            height: 5in; /* 5 بوصة ارتفاع */
-            padding: 0.2in;
-            font-family: 'Cairo', sans-serif;
-            direction: rtl;
-            border: 1px solid #000;
-            margin: 0 auto;
-            box-sizing: border-box;
-        }
-
-        .required-field {
+        /* حقل مطلوب */
+        .required {
             border-color: #ff0000 !important;
         }
 
-        .error-message {
-            color: #ff0000;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
+        .required-label::after {
+            content: " *";
+            color: red;
         }
     </style>
 </head>
@@ -671,9 +684,8 @@
                     <div class="card">
                         <div class="grid g2" style="gap:20px">
                             <div>
-                                <label>الموقع <span style="color:red">*</span></label>
+                                <label class="required-label">الموقع</label>
                                 <select id="site" style="height:60px" required></select>
-                                <div class="error-message" id="siteError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
                                 <label>رقم التلفون</label>
@@ -684,49 +696,42 @@
                                 <input id="clientName" placeholder="اسم المتعامل" style="height:60px">
                             </div>
                             <div>
-                                <label>رقم الفاتورة (يستخدم البادئة) <span style="color:red">*</span></label>
+                                <label class="required-label">رقم الفاتورة (يستخدم البادئة)</label>
                                 <input id="invoiceNo" placeholder style="height:60px" required>
-                                <div class="error-message" id="invoiceNoError">هذا الحقل مطلوب</div>
                             </div>
                         </div>
 
                         <div class="grid g3" style="margin-top:20px;gap:20px">
                             <div>
-                                <label>رقم الذبيحة <span style="color:red">*</span></label>
+                                <label class="required-label">رقم الذبيحة</label>
                                 <input id="animalNo" style="height:60px" required>
-                                <div class="error-message" id="animalNoError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label>رقم الاستيكر <span style="color:red">*</span></label>
+                                <label class="required-label">رقم الاستيكر</label>
                                 <select id="sticker" style="height:60px" required></select>
-                                <div class="error-message" id="stickerError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label>العدد <span style="color:red">*</span></label>
+                                <label class="required-label">العدد</label>
                                 <select id="qty" style="height:60px" required></select>
-                                <div class="error-message" id="qtyError">هذا الحقل مطلوب</div>
                             </div>
                         </div>
 
                         <div class="grid g4" style="margin-top:20px;gap:20px">
                             <div>
-                                <label>نوع الذبيحة <span style="color:red">*</span></label>
+                                <label class="required-label">نوع الذبيحة</label>
                                 <select id="animalType" style="height:60px" required></select>
-                                <div class="error-message" id="animalTypeError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label>نوع التقطيع <span style="color:red">*</span></label>
+                                <label class="required-label">نوع التقطيع</label>
                                 <select id="cutType" style="height:60px" required></select>
-                                <div class="error-message" id="cutTypeError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label>السعر (درهم) <span style="color:red">*</span></label>
+                                <label class="required-label">السعر (درهم)</label>
                                 <input id="price" type="number" min="0" step="0.5" value="0" style="height:60px" required>
-                                <div class="error-message" id="priceError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label>الإجمالي</label>
-                                <input id="total" type="number" readonly style="height:60px">
+                                <label class="required-label">الإجمالي</label>
+                                <input id="total" type="number" readonly style="height:60px" required>
                             </div>
                         </div>
 
@@ -740,12 +745,11 @@
                                 </select>
                             </div>
                             <div>
-                                <label>طريقة الدفع <span style="color:red">*</span></label>
+                                <label class="required-label">طريقة الدفع</label>
                                 <select id="payment" style="height:60px" required>
                                     <option>بطاقة</option>
                                     <option>كاش</option>
                                 </select>
-                                <div class="error-message" id="paymentError">هذا الحقل مطلوب</div>
                             </div>
                         </div>
 
@@ -857,7 +861,7 @@
                         <th>رقم الفاتورة</th>
                         <th>رقم الذبيحة</th>
                         <th>رقم الاستيكر</th>
-                        <th>نوع الذبيحة</th>
+                        <th>نوع الذбиحة</th>
                         <th>نوع التقطيع</th>
                         <th>العدد</th>
                         <th>السعر</th>
@@ -996,7 +1000,7 @@
                         </div>
                     </div>
                     <div class="row" style="margin-top:15px">
-                        <button class="btn b-cyan" id="btnRefreshAll" style="height:50px">تحديث السجلات</button>
+                        <button class="btn b-cyan" id="btnApplyImage" style="height:50px">تطبيق الصورة على الكل</button>
                     </div>
                 </div>
 
@@ -1011,6 +1015,13 @@
                         <button class="btn b-amber" id="btnPreviewCard" style="height:50px">معاينة</button>
                     </div>
                     <div id="cardPreviewWrap" class="card" style="overflow:auto;margin-top:15px"></div>
+                </div>
+
+                <div class="card">
+                    <h3>إعدادات النظام</h3>
+                    <div class="row">
+                        <button class="btn b-red" id="btnResetData" style="height:50px">مسح جميع السجلات</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1050,6 +1061,18 @@
                 
                 <button id="closeFoodCard" class="btn b-red" style="position:absolute;top:10px;right:10px">إغلاق</button>
                 <button id="printFoodCard" class="btn b-blue" style="position:absolute;top:10px;left:10px">طباعة</button>
+            </div>
+        </div>
+
+        <!-- نافذة معاينة الطباعة -->
+        <div id="printPreviewModal" class="print-preview-modal">
+            <div class="print-preview-content">
+                <button class="close-preview" id="closePreview">إغلاق</button>
+                <div id="printPreviewBody"></div>
+                <div class="row" style="margin-top:20px;justify-content:center">
+                    <button class="btn b-blue" id="doPrint">طباعة</button>
+                    <button class="btn b-red" id="cancelPrint">إلغاء</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1125,6 +1148,8 @@
                     login: null,
                     input: null,
                     hub: null,
+                    clients: null,
+                    stats: null,
                     logo: null,
                     foodcard: null
                 },
@@ -1136,7 +1161,8 @@
                 printerSettings: {
                     'Epson-TM-70II': { width: 80, height: 297 },
                     'Epson-TM-U220': { width: 80, height: 297 },
-                    'Zebra-ZT-230': { width: 9.701, height: 1.907 }
+                    'Zebra-ZT-230': { width: 9.701, height: 1.907 },
+                    'Invoice-Custom': { width: 7, height: 5 }
                 },
                 cardNote: ' ',
                 clients: {},
@@ -1335,30 +1361,21 @@
             $('#addons').selectedIndex = -1;
             $('#payment').value = 'بطاقة';
             
-            // إزالة علامات الخطأ
-            $$('.error-message').forEach(el => el.style.display = 'none');
-            $$('input, select').forEach(el => el.classList.remove('required-field'));
+            // إزالة علامات الحقول المطلوبة
+            $$('.required').forEach(el => el.classList.remove('required'));
         }
 
         function validateForm() {
             let isValid = true;
-            
-            const requiredFields = [
-                'site', 'invoiceNo', 'animalNo', 'sticker', 'qty', 
-                'animalType', 'cutType', 'price', 'payment'
-            ];
+            const requiredFields = ['site', 'invoiceNo', 'animalNo', 'sticker', 'qty', 'animalType', 'cutType', 'price', 'payment'];
             
             requiredFields.forEach(field => {
                 const element = $(`#${field}`);
-                const errorElement = $(`#${field}Error`);
-                
-                if (!element.value || element.value === '') {
-                    element.classList.add('required-field');
-                    errorElement.style.display = 'block';
+                if (!element.value.trim()) {
+                    element.classList.add('required');
                     isValid = false;
                 } else {
-                    element.classList.remove('required-field');
-                    errorElement.style.display = 'none';
+                    element.classList.remove('required');
                 }
             });
             
@@ -1412,35 +1429,6 @@
 
         function expiryDays(a) {
             return (a === 'خروف' || a === 'ماعز') ? 14 : 21;
-        }
-
-        function printToEpsonTM70II(content) {
-            // إنشاء نافذة طباعة جديدة
-            const printWindow = window.open('', '_blank', 'width=800,height=600');
-            
-            // كتابة محتوى الفاتورة في النافذة الجديدة
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>طباعة الفاتورة</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; direction: rtl; }
-                        table { width: 100%; border-collapse: collapse; }
-                        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
-                        @media print {
-                            @page { size: 7in 5in; margin: 0; }
-                            body { width: 7in; height: 5in; }
-                        }
-                    </style>
-                </head>
-                <body onload="window.print(); window.close();">
-                    ${content}
-                </body>
-                </html>
-            `);
-            
-            printWindow.document.close();
         }
 
         function buildInvoice(e) {
@@ -1513,30 +1501,52 @@
             </div>`;
         }
 
+        function showPrintPreview(content, isFoodCard = false) {
+            $('#printPreviewBody').innerHTML = content;
+            $('#printPreviewModal').style.display = 'flex';
+            
+            // حفظ نوع المحتوى للطباعة لاحقاً
+            $('#printPreviewModal').dataset.printType = isFoodCard ? 'foodcard' : 'invoice';
+        }
+
+        function doPrint() {
+            const printType = $('#printPreviewModal').dataset.printType;
+            const printContent = document.createElement('div');
+            printContent.className = 'print-content';
+            printContent.innerHTML = $('#printPreviewBody').innerHTML;
+            
+            document.body.classList.add('printing');
+            document.body.appendChild(printContent);
+            
+            if (printType === 'foodcard') {
+                // إعدادات خاصة بالبطاقة الغذائية
+                const printSettings = {
+                    silent: true,
+                    printBackground: true,
+                    margin: 'none'
+                };
+                
+                window.print(printSettings);
+            } else {
+                // إعدادات خاصة بالفاتورة
+                window.print();
+            }
+            
+            document.body.classList.remove('printing');
+            document.body.removeChild(printContent);
+            $('#printPreviewModal').style.display = 'none';
+            
+            if (printType === 'foodcard') {
+                clearInputFields();
+            }
+        }
+
         function printInvoiceLast() {
             const e = state.data.entries[state.data.entries.length - 1];
             if (!e) return alert('لا بيانات');
             
             const content = buildInvoice(e);
-            
-            if (state.data.printers.selected === 'Epson-TM-70II') {
-                printToEpsonTM70II(content);
-            } else {
-                const printContent = document.createElement('div');
-                printContent.className = 'print-content';
-                printContent.innerHTML = content;
-                
-                document.body.classList.add('printing');
-                document.body.appendChild(printContent);
-                
-                // فتح نافذة اختيار الطابعة
-                if (window.print) {
-                    window.print();
-                }
-                
-                document.body.classList.remove('printing');
-                document.body.removeChild(printContent);
-            }
+            showPrintPreview(content, false);
         }
         
         function printInvoiceFromTable(index) {
@@ -1544,46 +1554,15 @@
             if (!e) return;
             
             const content = buildInvoice(e);
-            
-            if (state.data.printers.selected === 'Epson-TM-70II') {
-                printToEpsonTM70II(content);
-            } else {
-                const printContent = document.createElement('div');
-                printContent.className = 'print-content';
-                printContent.innerHTML = content;
-                
-                document.body.classList.add('printing');
-                document.body.appendChild(printContent);
-                
-                // فتح نافذة اختيار الطابعة
-                if (window.print) {
-                    window.print();
-                }
-                
-                document.body.classList.remove('printing');
-                document.body.removeChild(printContent);
-            }
+            showPrintPreview(content, false);
         }
 
         function printFoodCardLast() {
             const e = state.data.entries[state.data.entries.length - 1];
             if (!e) return alert('لا بيانات');
             
-            const printContent = document.createElement('div');
-            printContent.className = 'print-content';
-            printContent.innerHTML = buildFoodCard(e);
-            
-            document.body.classList.add('printing');
-            document.body.appendChild(printContent);
-            
-            // فتح نافذة اختيار الطابعة
-            if (window.print) {
-                window.print();
-            }
-            
-            document.body.classList.remove('printing');
-            document.body.removeChild(printContent);
-            clearInputFields();
+            const content = buildFoodCard(e);
+            showPrintPreview(content, true);
         }
 
         function filter(site, from, to) {
@@ -1601,7 +1580,7 @@
             const from = $('#fltFrom').value;
             const to = $('#fltTo').value;
             const rows = filter(site, from, to);
-            const tb = $('#tblClients tbody');
+            const tb = $('#tblClientsReport tbody');
             tb.innerHTML = '';
             rows.forEach((e, i) => {
                 const tr = document.createElement('tr');
@@ -1663,11 +1642,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${Array.from($('#tblClients tbody').children).map(tr => tr.outerHTML).join('')}
+                        ${Array.from($('#tblClientsReport tbody').children).map(tr => tr.outerHTML).join('')}
                     </tbody>
                 </table>
                 <div class="report-footer">
-                    <p>عدد السجلات: ${$('#tblClients tbody').children.length}</p>
+                    <p>عدد السجلات: ${$('#tblClientsReport tbody').children.length}</p>
                 </div>
             </div>`;
             
@@ -1869,14 +1848,35 @@
             setScreen('login');
         }
 
-        function refreshAllData() {
+        function resetData() {
             if (confirm('هل أنت متأكد من أنك تريد مسح جميع السجلات؟ لا يمكن التراجع عن هذا الإجراء.')) {
                 state.data.entries = [];
+                state.data.clients = {};
                 save();
                 renderCurrent();
                 renderInvoices();
                 alert('تم مسح جميع السجلات بنجاح');
             }
+        }
+
+        function applyImageToAll() {
+            const welcomeImg = state.data.images.welcome;
+            if (!welcomeImg) {
+                alert('يرجى رفع صورة لشاشة الترحيب أولاً');
+                return;
+            }
+            
+            state.data.images.login = welcomeImg;
+            state.data.images.input = welcomeImg;
+            state.data.images.hub = welcomeImg;
+            state.data.images.clients = welcomeImg;
+            state.data.images.stats = welcomeImg;
+            state.data.images.logo = welcomeImg;
+            state.data.images.foodcard = welcomeImg;
+            
+            save();
+            refreshImages();
+            alert('تم تطبيق الصورة على جميع الشاشات بنجاح');
         }
 
         function init() {
@@ -2114,8 +2114,20 @@
                 }
             }
             
-            if (e.target.id === 'btnRefreshAll') {
-                refreshAllData();
+            if (e.target.id === 'btnApplyImage') {
+                applyImageToAll();
+            }
+            
+            if (e.target.id === 'btnResetData') {
+                resetData();
+            }
+            
+            if (e.target.id === 'closePreview' || e.target.id === 'cancelPrint') {
+                $('#printPreviewModal').style.display = 'none';
+            }
+            
+            if (e.target.id === 'doPrint') {
+                doPrint();
             }
             
             const cell = e.target.closest('#tblInvoices tbody td');
