@@ -1176,7 +1176,7 @@
     </div>
 
     <script>
-        const DBKEY = 'slaughter-app-v4';
+        const DBKEY = 'slaughter-app-v5';
         const state = {
             screen: 'welcome',
             logged: false,
@@ -1202,7 +1202,7 @@
                 state.logged = parsed.logged || false;
                 state.loggedId = parsed.loggedId || null;
                 state.role = parsed.role || 'user';
-                state.screen = parsed.screen || 'welcome';
+                state.screen = parsed.screen || 'login';
             }
         }
 
@@ -1283,6 +1283,9 @@
             $('#settingsBtn').style.display = state.role === 'admin' ? 'inline-flex' : 'none';
             $('#mobileMenu').style.display = state.logged ? 'flex' : 'none';
             $('#mobileSettingsBtn').style.display = state.role === 'admin' ? 'flex' : 'none';
+            
+            // حفظ الحالة الحالية
+            save();
         }
 
         function populate(sel, arr) {
@@ -1539,7 +1542,7 @@
                         <tr><td style="padding:4px;width:30%;border:1px solid #000"><b>التاريخ</b></td><td style="padding:4px;border:1px solid #000">${dayjs(e.date).format('YYYY-MM-DD HH:mm')}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>رقم الفاتورة</b></td><td style="padding:4px;border:1px solid #000">${e.invoiceNo}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>رقم الذبيحة</b></td><td style="padding:4px;border:1px solid #000">${e.animalNo}</td></tr>
-                        <tr><td style="padding:4px;border:1px solid #000"><b>رقم الاستيكر</b></td><td style="padding:4px;border:1px solid #000">${e.sticker}</td></tr>
+                        <tr><td style="padding:4px;border:1px solid #000"><b>رقم الاستيكר</b></td><td style="padding:4px;border:1px solid #000">${e.sticker}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>نوع الذبيحة</b></td><td style="padding:4px;border:1px solid #000">${e.animalType}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>نوع التقطيع</b></td><td style="padding:4px;border:1px solid #000">${e.cutType}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>العدد</b></td><td style="padding:4px;border:1px solid #000">${e.qty}</td></tr>
@@ -1977,7 +1980,7 @@
             // عرض شاشة الترحيب لمدة 500 ملي ثانية ثم التبديل إلى شاشة تسجيل الدخول
             setTimeout(() => {
                 $('#welcomeOverlay').style.display = 'none';
-                setScreen('login');
+                setScreen(state.screen);
             }, 500);
         }
 
