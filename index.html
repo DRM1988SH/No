@@ -452,16 +452,16 @@
 
         /* أنماط الطباعة المعدلة */
         @media print {
-            body.printing * {
+            body * {
                 visibility: hidden;
             }
             
-            body.printing .print-content,
-            body.printing .print-content * {
+            .print-content,
+            .print-content * {
                 visibility: visible;
             }
         
-            body.printing {
+            body {
                 margin: 0;
                 padding: 0;
             }
@@ -519,6 +519,14 @@
             .no-print {
                 display: none !important;
             }
+            
+            .invoice-print {
+                width: 7in;
+                height: 5in;
+                margin: 0;
+                padding: 0.2in;
+                box-sizing: border-box;
+            }
         }
 
         /* تعديلات لتقرير المتعاملين في شاشة الإدخال */
@@ -530,7 +538,7 @@
 
         .input-form-container {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
 
@@ -538,17 +546,83 @@
             margin-top: 20px;
         }
 
-        /* تعديلات الطباعة */
-        .invoice-print {
-            width: 7in;
-            height: 5in;
-            padding: 0.2in;
-            border: 1px solid #000;
-            margin: 0 auto;
-            direction: rtl;
-            font-family: 'Cairo', sans-serif;
+        /* تنسيقات متجاوبة */
+        @media (max-width: 1200px) {
+            .input-form-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                font-size: 16px;
+                min-width: 120px;
+                height: 45px;
+            }
+            
+            input, select, textarea {
+                font-size: 16px;
+                height: 45px;
+            }
         }
 
+        @media (max-width: 768px) {
+            .app {
+                padding: 10px;
+            }
+            
+            .screen {
+                padding: 15px;
+            }
+            
+            .topnav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .grid.g2, .grid.g3, .grid.g4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .img200 {
+                height: 150px;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            thead th {
+                padding: 8px;
+                font-size: 16px;
+            }
+            
+            tbody td {
+                padding: 6px;
+            }
+        }
+
+        /* تنسيقات للطباعة */
+        .invoice-print {
+            width: 7in; /* 7 بوصة طول */
+            height: 5in; /* 5 بوصة ارتفاع */
+            padding: 0.2in;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            border: 1px solid #000;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        .required-field {
+            border-color: #ff0000 !important;
+        }
+
+        .error-message {
+            color: #ff0000;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
         /* نافذة معاينة الطباعة */
         .print-preview-modal {
             display: none;
@@ -562,7 +636,7 @@
             justify-content: center;
             align-items: center;
         }
-
+        
         .print-preview-content {
             background: white;
             padding: 20px;
@@ -572,60 +646,16 @@
             overflow: auto;
             position: relative;
         }
-
-        .close-preview {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--red-btn-bg);
-            color: var(--red-btn-color);
-            border: 2px solid var(--red-btn-color);
-            border-radius: 5px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        /* تحسينات للجوال */
-        @media (max-width: 768px) {
-            .btn {
-                min-width: 120px;
-                font-size: 16px;
-                padding: 0 15px;
-                height: 45px;
-            }
-            
-            input, select, textarea {
-                font-size: 16px;
-                height: 45px;
-                padding: 10px;
-            }
-            
-            .img200 {
-                height: 150px;
-            }
-            
-            .topnav {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .row {
-                flex-direction: column;
-            }
-            
-            .grid.g2, .grid.g3, .grid.g4 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* حقل مطلوب */
-        .required {
-            border-color: #ff0000 !important;
-        }
-
-        .required-label::after {
-            content: " *";
-            color: red;
+        
+        .print-preview-actions {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            border-top: 1px solid #ddd;
         }
     </style>
 </head>
@@ -684,8 +714,9 @@
                     <div class="card">
                         <div class="grid g2" style="gap:20px">
                             <div>
-                                <label class="required-label">الموقع</label>
+                                <label>الموقع <span style="color:red">*</span></label>
                                 <select id="site" style="height:60px" required></select>
+                                <div class="error-message" id="siteError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
                                 <label>رقم التلفون</label>
@@ -696,42 +727,49 @@
                                 <input id="clientName" placeholder="اسم المتعامل" style="height:60px">
                             </div>
                             <div>
-                                <label class="required-label">رقم الفاتورة (يستخدم البادئة)</label>
+                                <label>رقم الفاتورة (يستخدم البادئة) <span style="color:red">*</span></label>
                                 <input id="invoiceNo" placeholder style="height:60px" required>
+                                <div class="error-message" id="invoiceNoError">هذا الحقل مطلوب</div>
                             </div>
                         </div>
 
                         <div class="grid g3" style="margin-top:20px;gap:20px">
                             <div>
-                                <label class="required-label">رقم الذبيحة</label>
+                                <label>رقم الذبيحة <span style="color:red">*</span></label>
                                 <input id="animalNo" style="height:60px" required>
+                                <div class="error-message" id="animalNoError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label class="required-label">رقم الاستيكر</label>
+                                <label>رقم الاستيكر <span style="color:red">*</span></label>
                                 <select id="sticker" style="height:60px" required></select>
+                                <div class="error-message" id="stickerError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label class="required-label">العدد</label>
+                                <label>العدد <span style="color:red">*</span></label>
                                 <select id="qty" style="height:60px" required></select>
+                                <div class="error-message" id="qtyError">هذا الحقل مطلوب</div>
                             </div>
                         </div>
 
                         <div class="grid g4" style="margin-top:20px;gap:20px">
                             <div>
-                                <label class="required-label">نوع الذبيحة</label>
+                                <label>نوع الذبيحة <span style="color:red">*</span></label>
                                 <select id="animalType" style="height:60px" required></select>
+                                <div class="error-message" id="animalTypeError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label class="required-label">نوع التقطيع</label>
+                                <label>نوع التقطيع <span style="color:red">*</span></label>
                                 <select id="cutType" style="height:60px" required></select>
+                                <div class="error-message" id="cutTypeError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label class="required-label">السعر (درهم)</label>
+                                <label>السعر (درهم) <span style="color:red">*</span></label>
                                 <input id="price" type="number" min="0" step="0.5" value="0" style="height:60px" required>
+                                <div class="error-message" id="priceError">هذا الحقل مطلوب</div>
                             </div>
                             <div>
-                                <label class="required-label">الإجمالي</label>
-                                <input id="total" type="number" readonly style="height:60px" required>
+                                <label>الإجمالي</label>
+                                <input id="total" type="number" readonly style="height:60px">
                             </div>
                         </div>
 
@@ -745,11 +783,12 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="required-label">طريقة الدفع</label>
+                                <label>طريقة الدفع <span style="color:red">*</span></label>
                                 <select id="payment" style="height:60px" required>
                                     <option>بطاقة</option>
                                     <option>كاش</option>
                                 </select>
+                                <div class="error-message" id="paymentError">هذا الحقل مطلوب</div>
                             </div>
                         </div>
 
@@ -861,7 +900,7 @@
                         <th>رقم الفاتورة</th>
                         <th>رقم الذبيحة</th>
                         <th>رقم الاستيكر</th>
-                        <th>نوع الذбиحة</th>
+                        <th>نوع الذبيحة</th>
                         <th>نوع التقطيع</th>
                         <th>العدد</th>
                         <th>السعر</th>
@@ -1000,7 +1039,7 @@
                         </div>
                     </div>
                     <div class="row" style="margin-top:15px">
-                        <button class="btn b-cyan" id="btnApplyImage" style="height:50px">تطبيق الصورة على الكل</button>
+                        <button class="btn b-cyan" id="btnRefreshAll" style="height:50px">تحديث السجلات</button>
                     </div>
                 </div>
 
@@ -1015,13 +1054,6 @@
                         <button class="btn b-amber" id="btnPreviewCard" style="height:50px">معاينة</button>
                     </div>
                     <div id="cardPreviewWrap" class="card" style="overflow:auto;margin-top:15px"></div>
-                </div>
-
-                <div class="card">
-                    <h3>إعدادات النظام</h3>
-                    <div class="row">
-                        <button class="btn b-red" id="btnResetData" style="height:50px">مسح جميع السجلات</button>
-                    </div>
                 </div>
             </div>
         </section>
@@ -1063,15 +1095,14 @@
                 <button id="printFoodCard" class="btn b-blue" style="position:absolute;top:10px;left:10px">طباعة</button>
             </div>
         </div>
-
+        
         <!-- نافذة معاينة الطباعة -->
         <div id="printPreviewModal" class="print-preview-modal">
             <div class="print-preview-content">
-                <button class="close-preview" id="closePreview">إغلاق</button>
                 <div id="printPreviewBody"></div>
-                <div class="row" style="margin-top:20px;justify-content:center">
+                <div class="print-preview-actions">
                     <button class="btn b-blue" id="doPrint">طباعة</button>
-                    <button class="btn b-red" id="cancelPrint">إلغاء</button>
+                    <button class="btn b-red" id="closePrintPreview">إغلاق</button>
                 </div>
             </div>
         </div>
@@ -1087,7 +1118,8 @@
             data: getDefaults(),
             editingIndex: null,
             editingRow: null,
-            editingCell: null
+            editingCell: null,
+            currentPrintContent: null
         };
 
         // تحميل البيانات المحفوظة عند بدء التشغيل
@@ -1148,8 +1180,6 @@
                     login: null,
                     input: null,
                     hub: null,
-                    clients: null,
-                    stats: null,
                     logo: null,
                     foodcard: null
                 },
@@ -1161,8 +1191,7 @@
                 printerSettings: {
                     'Epson-TM-70II': { width: 80, height: 297 },
                     'Epson-TM-U220': { width: 80, height: 297 },
-                    'Zebra-ZT-230': { width: 9.701, height: 1.907 },
-                    'Invoice-Custom': { width: 7, height: 5 }
+                    'Zebra-ZT-230': { width: 9.701, height: 1.907 }
                 },
                 cardNote: ' ',
                 clients: {},
@@ -1361,21 +1390,30 @@
             $('#addons').selectedIndex = -1;
             $('#payment').value = 'بطاقة';
             
-            // إزالة علامات الحقول المطلوبة
-            $$('.required').forEach(el => el.classList.remove('required'));
+            // إزالة علامات الخطأ
+            $$('.error-message').forEach(el => el.style.display = 'none');
+            $$('input, select').forEach(el => el.classList.remove('required-field'));
         }
 
         function validateForm() {
             let isValid = true;
-            const requiredFields = ['site', 'invoiceNo', 'animalNo', 'sticker', 'qty', 'animalType', 'cutType', 'price', 'payment'];
+            
+            const requiredFields = [
+                'site', 'invoiceNo', 'animalNo', 'sticker', 'qty', 
+                'animalType', 'cutType', 'price', 'payment'
+            ];
             
             requiredFields.forEach(field => {
                 const element = $(`#${field}`);
-                if (!element.value.trim()) {
-                    element.classList.add('required');
+                const errorElement = $(`#${field}Error`);
+                
+                if (!element.value || element.value === '') {
+                    element.classList.add('required-field');
+                    errorElement.style.display = 'block';
                     isValid = false;
                 } else {
-                    element.classList.remove('required');
+                    element.classList.remove('required-field');
+                    errorElement.style.display = 'none';
                 }
             });
             
@@ -1450,7 +1488,7 @@
                         <tr><td style="padding:4px;border:1px solid #000"><b>نوع التقطيع</b></td><td style="padding:4px;border:1px solid #000">${e.cutType}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>العدد</b></td><td style="padding:4px;border:1px solid #000">${e.qty}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>السعر</b></td><td style="padding:4px;border:1px solid #000">${e.price} درهم</td></tr>
-                        <tr><td style="padding:4px;border:1px solid #000"><b>الإجمالي</b></td><td style="padding:4px;border:1px solid #000">${e.total.toFixed(2)} درهم</td></tr>
+                        <tr><td style="padding:4px;border:1px solid #000"><b>الإجمالي</b></td><td style="padding:4px;border:1px solid #000">${e.total.toFixed(2)}</td></tr>
                     </tbody>
                 </table>
                 <div style="margin-top:10px;text-align:center;font-size:12px;border-top:1px solid #000;padding-top:5px">
@@ -1501,44 +1539,129 @@
             </div>`;
         }
 
-        function showPrintPreview(content, isFoodCard = false) {
+        function buildClientsReport() {
+            const site = $('#fltSite').value;
+            const from = $('#fltFrom').value;
+            const to = $('#fltTo').value;
+            const title = `تقرير المتعاملين - ${site !== 'الكل' ? site : 'الكل'}`;
+            const logo = state.data.images.logo ? `<img src="${state.data.images.logo}" class="report-logo">` : '';
+            
+            return `
+            <div class="landscape-report">
+                <div class="report-header">
+                    ${logo}
+                    <div style="flex-grow:1; text-align:center">
+                        <h1 class="report-title">${title}</h1>
+                        <p style="margin:0;font-size:18px">${dayjs().format('YYYY-MM-DD HH:mm')}</p>
+                    </div>
+                </div>
+                <div class="report-meta">
+                    <p><b>الفترة:</b> ${from||'البداية'} إلى ${to||'النهاية'}</p>
+                </div>
+                <table style="width:100%;border-collapse:collapse;margin-top:20px">
+                    <thead>
+                        <tr>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">#</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">التاريخ</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">اسم المتعامل</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">رقم التلفون</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع الذبيحة</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع التقطيع</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">رقم الفاتورة</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">العدد</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">السعر</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${Array.from($('#tblClientsReport tbody').children).map(tr => tr.outerHTML).join('')}
+                    </tbody>
+                </table>
+                <div class="report-footer">
+                    <p>عدد السجلات: ${$('#tblClientsReport tbody').children.length}</p>
+                </div>
+            </div>`;
+        }
+
+        function buildStatsReport() {
+            const site = $('#fltSite2').value;
+            const from = $('#fltFrom2').value;
+            const to = $('#fltTo2').value;
+            const title = `تقرير الإحصاء والمالية - ${site !== 'الكل' ? site : 'الكل'}`;
+            const logo = state.data.images.logo ? `<img src="${state.data.images.logo}" class="report-logo">` : '';
+            
+            return `
+            <div class="landscape-report">
+                <div class="report-header">
+                    ${logo}
+                    <div style="flex-grow:1; text-align:center">
+                        <h1 class="report-title">${title}</h1>
+                        <p style="margin:0;font-size:18px">${dayjs().format('YYYY-MM-DD HH:mm')}</p>
+                    </div>
+                </div>
+                <div class="report-meta">
+                    <p><b>الفترة:</b> ${from||'البداية'} إلى ${to||'النهاية'}</p>
+                </div>
+                <table style="width:100%;border-collapse:collapse;margin-top:20px">
+                    <thead>
+                        <tr>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع الذبيحة</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع التقطيع</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">عدد الذبائح</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">العدد الكلي</th>
+                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">المبلغ الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${Array.from($('#tblStats tbody').children).map(tr => tr.outerHTML).join('')}
+                    </tbody>
+                </table>
+                <div class="report-footer">
+                    <p>عدد الأنواع: ${$('#tblStats tbody').children.length}</p>
+                </div>
+            </div>`;
+        }
+
+        function showPrintPreview(content) {
+            state.currentPrintContent = content;
             $('#printPreviewBody').innerHTML = content;
             $('#printPreviewModal').style.display = 'flex';
-            
-            // حفظ نوع المحتوى للطباعة لاحقاً
-            $('#printPreviewModal').dataset.printType = isFoodCard ? 'foodcard' : 'invoice';
+        }
+
+        function closePrintPreview() {
+            $('#printPreviewModal').style.display = 'none';
+            state.currentPrintContent = null;
         }
 
         function doPrint() {
-            const printType = $('#printPreviewModal').dataset.printType;
-            const printContent = document.createElement('div');
-            printContent.className = 'print-content';
-            printContent.innerHTML = $('#printPreviewBody').innerHTML;
+            if (!state.currentPrintContent) return;
             
-            document.body.classList.add('printing');
-            document.body.appendChild(printContent);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>طباعة</title>
+                    <style>
+                        body { 
+                            font-family: "Cairo", sans-serif;
+                            direction: rtl;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                        }
+                    </style>
+                </head>
+                <body onload="window.print();">
+                    ${state.currentPrintContent}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
             
-            if (printType === 'foodcard') {
-                // إعدادات خاصة بالبطاقة الغذائية
-                const printSettings = {
-                    silent: true,
-                    printBackground: true,
-                    margin: 'none'
-                };
-                
-                window.print(printSettings);
-            } else {
-                // إعدادات خاصة بالفاتورة
-                window.print();
-            }
-            
-            document.body.classList.remove('printing');
-            document.body.removeChild(printContent);
-            $('#printPreviewModal').style.display = 'none';
-            
-            if (printType === 'foodcard') {
-                clearInputFields();
-            }
+            closePrintPreview();
         }
 
         function printInvoiceLast() {
@@ -1546,7 +1669,7 @@
             if (!e) return alert('لا بيانات');
             
             const content = buildInvoice(e);
-            showPrintPreview(content, false);
+            showPrintPreview(content);
         }
         
         function printInvoiceFromTable(index) {
@@ -1554,7 +1677,7 @@
             if (!e) return;
             
             const content = buildInvoice(e);
-            showPrintPreview(content, false);
+            showPrintPreview(content);
         }
 
         function printFoodCardLast() {
@@ -1562,7 +1685,7 @@
             if (!e) return alert('لا بيانات');
             
             const content = buildFoodCard(e);
-            showPrintPreview(content, true);
+            showPrintPreview(content);
         }
 
         function filter(site, from, to) {
@@ -1600,66 +1723,9 @@
             });
         }
 
-        function buildReportHeader(title) {
-            const logo = state.data.images.logo ?
-                `<img src="${state.data.images.logo}" class="report-logo">` : '';
-            return `
-            <div class="report-header">
-                ${logo}
-                <div style="flex-grow:1; text-align:center">
-                    <h1 class="report-title">${title}</h1>
-                    <p style="margin:0;font-size:18px">${dayjs().format('YYYY-MM-DD HH:mm')}</p>
-                </div>
-            </div>`;
-        }
-
         function exportClientsPdf() {
-            const site = $('#fltSite').value;
-            const from = $('#fltFrom').value;
-            const to = $('#fltTo').value;
-            const title = `تقرير المتعاملين - ${site !== 'الكل' ? site : 'الكل'}`;
-            const header = buildReportHeader(title);
-            
-            const content = `
-            <div class="landscape-report">
-                ${header}
-                <div class="report-meta">
-                    <p><b>الفترة:</b> ${from||'البداية'} إلى ${to||'النهاية'}</p>
-                </div>
-                <table style="width:100%;border-collapse:collapse;margin-top:20px">
-                    <thead>
-                        <tr>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">#</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">التاريخ</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">اسم المتعامل</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">رقم التلفون</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع الذبيحة</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع التقطيع</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">رقم الفاتورة</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">العدد</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">السعر</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">الإجمالي</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${Array.from($('#tblClientsReport tbody').children).map(tr => tr.outerHTML).join('')}
-                    </tbody>
-                </table>
-                <div class="report-footer">
-                    <p>عدد السجلات: ${$('#tblClientsReport tbody').children.length}</p>
-                </div>
-            </div>`;
-            
-            const printContent = document.createElement('div');
-            printContent.className = 'print-content';
-            printContent.innerHTML = content;
-            
-            document.body.classList.add('printing');
-            document.body.appendChild(printContent);
-            
-            window.print();
-            document.body.classList.remove('printing');
-            document.body.removeChild(printContent);
+            const content = buildClientsReport();
+            showPrintPreview(content);
         }
 
         function runStats() {
@@ -1698,47 +1764,8 @@
         }
 
         function exportStatsPdf() {
-            const site = $('#fltSite2').value;
-            const from = $('#fltFrom2').value;
-            const to = $('#fltTo2').value;
-            const title = `تقرير الإحصاء والمالية - ${site !== 'الكل' ? site : 'الكل'}`;
-            const header = buildReportHeader(title);
-            
-            const content = `
-            <div class="landscape-report">
-                ${header}
-                <div class="report-meta">
-                    <p><b>الفترة:</b> ${from||'البداية'} إلى ${to||'النهاية'}</p>
-                </div>
-                <table style="width:100%;border-collapse:collapse;margin-top:20px">
-                    <thead>
-                        <tr>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع الذبيحة</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع التقطيع</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">عدد الذبائح</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">العدد الكلي</th>
-                            <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">المبلغ الإجمالي</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${Array.from($('#tblStats tbody').children).map(tr => tr.outerHTML).join('')}
-                    </tbody>
-                </table>
-                <div class="report-footer">
-                    <p>عدد الأنواع: ${$('#tblStats tbody').children.length}</p>
-                </div>
-            </div>`;
-            
-            const printContent = document.createElement('div');
-            printContent.className = 'print-content';
-            printContent.innerHTML = content;
-            
-            document.body.classList.add('printing');
-            document.body.appendChild(printContent);
-            
-            window.print();
-            document.body.classList.remove('printing');
-            document.body.removeChild(printContent);
+            const content = buildStatsReport();
+            showPrintPreview(content);
         }
 
         function renderInvoices() {
@@ -1848,35 +1875,14 @@
             setScreen('login');
         }
 
-        function resetData() {
+        function refreshAllData() {
             if (confirm('هل أنت متأكد من أنك تريد مسح جميع السجلات؟ لا يمكن التراجع عن هذا الإجراء.')) {
                 state.data.entries = [];
-                state.data.clients = {};
                 save();
                 renderCurrent();
                 renderInvoices();
                 alert('تم مسح جميع السجلات بنجاح');
             }
-        }
-
-        function applyImageToAll() {
-            const welcomeImg = state.data.images.welcome;
-            if (!welcomeImg) {
-                alert('يرجى رفع صورة لشاشة الترحيب أولاً');
-                return;
-            }
-            
-            state.data.images.login = welcomeImg;
-            state.data.images.input = welcomeImg;
-            state.data.images.hub = welcomeImg;
-            state.data.images.clients = welcomeImg;
-            state.data.images.stats = welcomeImg;
-            state.data.images.logo = welcomeImg;
-            state.data.images.foodcard = welcomeImg;
-            
-            save();
-            refreshImages();
-            alert('تم تطبيق الصورة على جميع الشاشات بنجاح');
         }
 
         function init() {
@@ -2084,16 +2090,8 @@
                 $('#foodCardContainer').style.display = 'none';
             }
             if (e.target.id === 'printFoodCard') {
-                const printContent = document.createElement('div');
-                printContent.className = 'print-content';
-                printContent.innerHTML = $('#foodCardContainer').querySelector('.food-card').outerHTML;
-                
-                document.body.classList.add('printing');
-                document.body.appendChild(printContent);
-                
-                window.print();
-                document.body.classList.remove('printing');
-                document.body.removeChild(printContent);
+                const content = $('#foodCardContainer').querySelector('.food-card').outerHTML;
+                showPrintPreview(content);
             }
             
             if (e.target.id === 'btnSavePrinter') {
@@ -2114,20 +2112,16 @@
                 }
             }
             
-            if (e.target.id === 'btnApplyImage') {
-                applyImageToAll();
-            }
-            
-            if (e.target.id === 'btnResetData') {
-                resetData();
-            }
-            
-            if (e.target.id === 'closePreview' || e.target.id === 'cancelPrint') {
-                $('#printPreviewModal').style.display = 'none';
+            if (e.target.id === 'btnRefreshAll') {
+                refreshAllData();
             }
             
             if (e.target.id === 'doPrint') {
                 doPrint();
+            }
+            
+            if (e.target.id === 'closePrintPreview') {
+                closePrintPreview();
             }
             
             const cell = e.target.closest('#tblInvoices tbody td');
