@@ -47,6 +47,7 @@
             width: 100%;
             overflow-x: hidden;
             min-height: 100vh;
+            padding-bottom: 70px; /* مساحة لقائمة الجوال */
         }
 
         .app {
@@ -72,74 +73,6 @@
         .screen.active {
             display: flex;
             flex-direction: column;
-        }
-
-        .topnav {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-            justify-content: center;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 15px;
-        }
-
-        .btn {
-            border: 0;
-            border-radius: var(--btn-radius);
-            padding: var(--btn-padding);
-            font-weight: 800;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            height: var(--btn-height);
-            font-size: var(--btn-font-size);
-            min-width: 110px;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .b-blue {
-            background: var(--blue-btn-bg);
-            color: var(--blue-btn-color);
-            border: 2px solid var(--blue-btn-color);
-        }
-
-        .b-green {
-            background: var(--green-btn-bg);
-            color: var(--green-btn-color);
-            border: 2px solid var(--green-btn-color);
-        }
-
-        .b-amber {
-            background: var(--amber-btn-bg);
-            color: var(--amber-btn-color);
-            border: 2px solid var(--amber-btn-color);
-        }
-
-        .b-red {
-            background: var(--red-btn-bg);
-            color: var(--red-btn-color);
-            border: 2px solid var(--red-btn-color);
-        }
-
-        .b-purple {
-            background: var(--purple-btn-bg);
-            color: var(--purple-btn-color);
-            border: 2px solid var(--purple-btn-color);
-        }
-
-        .b-cyan {
-            background: var(--cyan-btn-bg);
-            color: var(--cyan-btn-color);
-            border: 2px solid var(--cyan-btn-color);
         }
 
         .card {
@@ -443,18 +376,17 @@
 
         /* أنماط الطباعة المعدلة */
         @media print {
-            body.printing * {
+            body, html {
+                height: auto;
+                overflow: visible !important;
+            }
+            
+            body * {
                 visibility: hidden;
             }
             
-            body.printing .print-content,
-            body.printing .print-content * {
+            .print-content, .print-content * {
                 visibility: visible;
-            }
-        
-            body.printing {
-                margin: 0;
-                padding: 0;
             }
             
             .print-content {
@@ -466,6 +398,10 @@
                 padding: 0;
                 margin: 0;
                 background: white;
+            }
+            
+            .no-print, .no-print * {
+                display: none !important;
             }
             
             .landscape-report {
@@ -493,8 +429,7 @@
             
             @page {
                 size: A4 landscape;
-                margin-top: 0.15in;
-                margin-bottom: 0.75in;
+                margin: 0.5cm;
             }
             
             /* تنسيق خاص للبطاقة الغذائية */
@@ -505,10 +440,6 @@
                 width: 9.701in;
                 height: 0.907in;
                 border: 2.5pt solid #000;
-            }
-            
-            .no-print {
-                display: none !important;
             }
         }
 
@@ -591,11 +522,6 @@
                 padding: 8px;
             }
             
-            .topnav {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
             .row {
                 flex-direction: column;
             }
@@ -649,9 +575,9 @@
             max-width: 90%;
         }
 
-        /* تحسينات القوائم */
+        /* قائمة الجوال في الأسفل */
         .mobile-menu {
-            display: none;
+            display: flex;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -660,6 +586,7 @@
             border-top: 2px solid var(--b2);
             z-index: 1000;
             padding: 10px;
+            justify-content: space-around;
         }
 
         .mobile-menu-btn {
@@ -677,17 +604,6 @@
         .mobile-menu-icon {
             font-size: 20px;
             margin-bottom: 5px;
-        }
-
-        @media (max-width: 768px) {
-            .topnav {
-                display: none;
-            }
-            
-            .mobile-menu {
-                display: flex;
-                justify-content: space-around;
-            }
         }
 
         /* تحسينات عامة */
@@ -719,6 +635,64 @@
                 max-width: 1200px;
             }
         }
+
+        /* أزرار التنقل */
+        .btn {
+            border: 0;
+            border-radius: var(--btn-radius);
+            padding: var(--btn-padding);
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: var(--btn-height);
+            font-size: var(--btn-font-size);
+            min-width: 110px;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .b-blue {
+            background: var(--blue-btn-bg);
+            color: var(--blue-btn-color);
+            border: 2px solid var(--blue-btn-color);
+        }
+
+        .b-green {
+            background: var(--green-btn-bg);
+            color: var(--green-btn-color);
+            border: 2px solid var(--green-btn-color);
+        }
+
+        .b-amber {
+            background: var(--amber-btn-bg);
+            color: var(--amber-btn-color);
+            border: 2px solid var(--amber-btn-color);
+        }
+
+        .b-red {
+            background: var(--red-btn-bg);
+            color: var(--red-btn-color);
+            border: 2px solid var(--red-btn-color);
+        }
+
+        .b-purple {
+            background: var(--purple-btn-bg);
+            color: var(--purple-btn-color);
+            border: 2px solid var(--purple-btn-color);
+        }
+
+        .b-cyan {
+            background: var(--cyan-btn-bg);
+            color: var(--cyan-btn-color);
+            border: 2px solid var(--cyan-btn-color);
+        }
     </style>
 </head>
 <body>
@@ -732,17 +706,7 @@
     </div>
 
     <div class="app">
-        <div class="topnav no-print" id="mainNav" style="display:none">
-            <button class="btn b-blue" data-goto="hub">الرئيسية</button>
-            <button class="btn b-purple" data-goto="input">الإدخال</button>
-            <button class="btn b-cyan" data-goto="clients">تقرير المتعاملين</button>
-            <button class="btn b-green" data-goto="stats">تقرير الإحصاء</button>
-            <button class="btn b-amber" data-goto="invoices">الفواتير</button>
-            <button class="btn b-red" data-goto="settings" style="display:none" id="settingsBtn">الإعدادات</button>
-            <button class="btn b-red" id="doLogout" style="margin-right:auto">تسجيل خروج</button>
-        </div>
-
-        <!-- قائمة الجوال -->
+        <!-- قائمة الجوال في الأسفل -->
         <div class="mobile-menu no-print" id="mobileMenu" style="display:none">
             <div class="mobile-menu-btn" data-goto="hub">
                 <span class="mobile-menu-icon">🏠</span>
@@ -767,6 +731,10 @@
             <div class="mobile-menu-btn" data-goto="settings" id="mobileSettingsBtn" style="display:none">
                 <span class="mobile-menu-icon">⚙️</span>
                 <span>الإعدادات</span>
+            </div>
+            <div class="mobile-menu-btn" id="doLogoutMobile">
+                <span class="mobile-menu-icon">🚪</span>
+                <span>خروج</span>
             </div>
         </div>
 
@@ -1176,7 +1144,7 @@
     </div>
 
     <script>
-        const DBKEY = 'slaughter-app-v5';
+        const DBKEY = 'slaughter-app-v6';
         const state = {
             screen: 'welcome',
             logged: false,
@@ -1279,8 +1247,6 @@
             $$('.screen').forEach(x => x.classList.remove('active'));
             $('#' + id).classList.add('active');
             state.screen = id;
-            $('#mainNav').style.display = state.logged ? 'flex' : 'none';
-            $('#settingsBtn').style.display = state.role === 'admin' ? 'inline-flex' : 'none';
             $('#mobileMenu').style.display = state.logged ? 'flex' : 'none';
             $('#mobileSettingsBtn').style.display = state.role === 'admin' ? 'flex' : 'none';
             
@@ -1380,17 +1346,6 @@
                 $('#customWidth').disabled = true;
                 $('#customHeight').disabled = true;
             }
-        }
-
-        function getInvoiceDimensions() {
-            if (state.data.printers.selected === 'custom') {
-                return {
-                    width: state.data.printers.customWidth,
-                    height: state.data.printers.customHeight
-                };
-            }
-            return state.data.printerSettings[state.data.printers.selected] || 
-                   { width: 80, height: 297 };
         }
 
         function getPrice(a, c) {
@@ -1542,12 +1497,12 @@
                         <tr><td style="padding:4px;width:30%;border:1px solid #000"><b>التاريخ</b></td><td style="padding:4px;border:1px solid #000">${dayjs(e.date).format('YYYY-MM-DD HH:mm')}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>رقم الفاتورة</b></td><td style="padding:4px;border:1px solid #000">${e.invoiceNo}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>رقم الذبيحة</b></td><td style="padding:4px;border:1px solid #000">${e.animalNo}</td></tr>
-                        <tr><td style="padding:4px;border:1px solid #000"><b>رقم الاستيكר</b></td><td style="padding:4px;border:1px solid #000">${e.sticker}</td></tr>
+                        <tr><td style="padding:4px;border:1px solid #000"><b>رقم الاستيكر</b></td><td style="padding:4px;border:1px solid #000">${e.sticker}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>نوع الذبيحة</b></td><td style="padding:4px;border:1px solid #000">${e.animalType}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>نوع التقطيع</b></td><td style="padding:4px;border:1px solid #000">${e.cutType}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>العدد</b></td><td style="padding:4px;border:1px solid #000">${e.qty}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>السعر</b></td><td style="padding:4px;border:1px solid #000">${e.price} درهم</td></tr>
-                        <tr><td style="padding:4px;border:1px solid #000"><b>الإجمالي</b></td><td style="padding:4px;border:1px solid #000">${e.total.toFixed(2)} درهم</td></tr>
+                        <tr><td style="padding:4px;border:1px solid #000"><b>الإجمالي</b></td><td style="padding:4px;border:1px solid #000">${e.total.toFixed(2)}</td></tr>
                     </tbody>
                 </table>
                 <div style="margin-top:10px;text-align:center;font-size:12px;border-top:1px solid #000;padding-top:5px">
@@ -1612,24 +1567,16 @@
             printContent.className = 'print-content';
             printContent.innerHTML = $('#printPreviewBody').innerHTML;
             
-            document.body.classList.add('printing');
             document.body.appendChild(printContent);
             
-            if (printType === 'foodcard') {
-                // إعدادات خاصة بالبطاقة الغذائية
-                const printSettings = {
-                    silent: true,
-                    printBackground: true,
-                    margin: 'none'
-                };
-                
-                window.print(printSettings);
-            } else {
-                // إعدادات خاصة بالفاتورة
-                window.print();
-            }
+            // إعدادات الطباعة المحسنة
+            const printSettings = {
+                silent: true,
+                printBackground: true
+            };
             
-            document.body.classList.remove('printing');
+            window.print(printSettings);
+            
             document.body.removeChild(printContent);
             $('#printPreviewModal').style.display = 'none';
             
@@ -1751,11 +1698,10 @@
             printContent.className = 'print-content';
             printContent.innerHTML = content;
             
-            document.body.classList.add('printing');
             document.body.appendChild(printContent);
             
             window.print();
-            document.body.classList.remove('printing');
+            
             document.body.removeChild(printContent);
         }
 
@@ -1830,11 +1776,10 @@
             printContent.className = 'print-content';
             printContent.innerHTML = content;
             
-            document.body.classList.add('printing');
             document.body.appendChild(printContent);
             
             window.print();
-            document.body.classList.remove('printing');
+            
             document.body.removeChild(printContent);
         }
 
@@ -2052,7 +1997,7 @@
                     alert('رقم وظيفي غير صحيح');
                 }
             }
-            if (e.target.id === 'doLogout') {
+            if (e.target.id === 'doLogout' || e.target.id === 'doLogoutMobile') {
                 doLogout();
             }
             if (e.target.id === 'btnAdd') {
