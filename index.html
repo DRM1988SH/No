@@ -221,9 +221,9 @@
         /* بطاقة غذائية */
         .foodcard {
             position: relative;
-            width: 9.701in;
-            height: 1.907in;
-            border: 2.5pt solid #000;
+            width: 24.5cm;
+            height: 2cm;
+            border: 0.5pt solid #000;
             padding: 0.05in;
             display: flex;
             gap: 0.03in;
@@ -244,7 +244,7 @@
         }
 
         .fc-box {
-            border: 2.5pt solid #000;
+            border: 1.5pt solid #000;
             padding: 0.03in 0.02in;
             font-size: 9pt;
             display: flex;
@@ -257,12 +257,12 @@
         }
 
         .fc-sticker {
-            border: 2.5pt solid #000;
+            border: 3.5pt solid #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 20pt;
+            font-weight: 1000;
+            font-size: 45pt;
             width: 1.1in;
         }
 
@@ -379,6 +379,8 @@
             body, html {
                 height: auto;
                 overflow: visible !important;
+                margin: 0;
+                padding: 0;
             }
             
             body * {
@@ -437,9 +439,18 @@
                 page-break-after: always;
                 margin: 0;
                 padding: 0.05in;
-                width: 9.701in;
-                height: 0.907in;
+                width: 24.5cm;
+                height: 2cm;
                 border: 2.5pt solid #000;
+            }
+            
+            /* تنسيق خاص للفاتورة */
+            .invoice-print {
+                width: 100%;
+                height: auto;
+                padding: 0;
+                border: none;
+                margin: 0;
             }
         }
 
@@ -462,8 +473,8 @@
 
         /* تعديلات الطباعة */
         .invoice-print {
-            width: 7in;
-            height: 5in;
+            width: 100%;
+            height: auto;
             padding: 0.2in;
             border: 1px solid #000;
             margin: 0 auto;
@@ -693,6 +704,39 @@
             color: var(--cyan-btn-color);
             border: 2px solid var(--cyan-btn-color);
         }
+        
+        /* جداول الإحصاءات أسفل الجدول الرئيسي */
+        .stats-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stats-table {
+            flex: 1;
+            min-width: 300px;
+            border-collapse: collapse;
+            border: 2px solid #000;
+        }
+        
+        .stats-table th, .stats-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .stats-table th {
+            background-color: #f4eee6;
+            font-weight: bold;
+        }
+        
+        .stats-table caption {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #5b3d1f;
+        }
     </style>
 </head>
 <body>
@@ -777,7 +821,9 @@
                             <div class="grid g2" style="gap:15px">
                                 <div>
                                     <label class="required-label">الموقع</label>
-                                    <select id="site" required></select>
+                                    <select id="site" required>
+                                        <option value="الكل" selected>الكل</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label>رقم التلفون</label>
@@ -838,17 +884,18 @@
                         <div class="form-section">
                             <h3 class="section-title">ملحقات إضافية</h3>
                             <div>
-                                <label>ملحقات</label>
-                                <select id="addons" multiple>
-                                    <option>كرش مصران كوارع</option>
-                                    <option>كوارع</option>
-                                    <option>كرش مصران</option>
-                                </select>
-                            </div>
+                                    <label>ملحقات</label>
+                                    <select id="addons" multiple>
+                                        <option>كرش مصران كوارع</option>
+                                        <option>كوارع</option>
+                                        <option>كرش مصران</option>
+                                    </select>
+                                </div>
                         </div>
 
                         <div class="row" style="margin-top:20px;gap:15px;justify-content:center">
                             <button class="btn b-green" id="btnAdd" style="height:50px;font-size:18px">إضافة ذبيحة</button>
+                            <button class="btn b-blue" id="btnNewSlaughter" style="height:50px;font-size:18px">ذبيحة جديدة</button>
                             <button class="btn b-blue" id="btnPrintInvoice" style="height:50px;font-size:18px">طباعة فاتورة</button>
                             <button class="btn b-amber" id="btnPrintFoodCard" style="height:50px;font-size:18px">طباعة البطاقة الغذائية</button>
                         </div>
@@ -938,6 +985,32 @@
                             <th>عدد الذبائح</th>
                             <th>العدد الكلي</th>
                             <th>المبلغ الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <!-- جداول الإحصاءات أسفل الجدول الرئيسي -->
+            <div class="stats-summary">
+                <table class="stats-table" id="tblPaymentStats">
+                    <caption>إحصائية طريقة الدفع</caption>
+                    <thead>
+                        <tr>
+                            <th>طريقة الدفع</th>
+                            <th>عدد المعاملات</th>
+                            <th>المبلغ الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                
+                <table class="stats-table" id="tblAnimalStats">
+                    <caption>إحصائية نوع الحيوان</caption>
+                    <thead>
+                        <tr>
+                            <th>نوع الحيوان</th>
+                            <th>العدد الكلي</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -1129,18 +1202,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- نوافذ المعاينة والطباعة -->
-        <div id="printPreviewModal" class="print-preview-modal">
-            <div class="print-preview-content">
-                <button class="close-preview" id="closePreview">إغلاق</button>
-                <div id="printPreviewBody"></div>
-                <div class="row" style="margin-top:15px;justify-content:center">
-                    <button class="btn b-blue" id="doPrint">طباعة</button>
-                    <button class="btn b-red" id="cancelPrint">إلغاء</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -1153,7 +1214,9 @@
             data: getDefaults(),
             editingIndex: null,
             editingRow: null,
-            editingCell: null
+            editingCell: null,
+            currentEntry: null, // إضافة لتخزين البيانات الحالية قبل الحفظ
+            currentSite: 'الكل' // إضافة لتخزين الموقع الحالي
         };
 
         // تحميل البيانات المحفوظة عند بدء التشغيل
@@ -1171,6 +1234,7 @@
                 state.loggedId = parsed.loggedId || null;
                 state.role = parsed.role || 'user';
                 state.screen = parsed.screen || 'login';
+                state.currentSite = parsed.currentSite || 'الكل';
             }
         }
 
@@ -1180,7 +1244,8 @@
                 logged: state.logged,
                 loggedId: state.loggedId,
                 role: state.role,
-                screen: state.screen
+                screen: state.screen,
+                currentSite: state.currentSite
             }));
         }
 
@@ -1284,7 +1349,8 @@
         }
 
         function refreshSites() {
-            populate($('#site'), state.data.sites.map(s => s.name));
+            populate($('#site'), ['الكل', ...state.data.sites.map(s => s.name)]);
+            $('#site').value = state.currentSite;
             populate($('#fltSite'), ['الكل', ...state.data.sites.map(s => s.name)]);
             populate($('#fltSite2'), ['الكل', ...state.data.sites.map(s => s.name)]);
         }
@@ -1400,21 +1466,37 @@
         }
 
         function clearInputFields() {
+            // حفظ الموقع الحالي
+            const currentSite = $('#site').value;
+            
+            // مسح جميع الحقول في نموذج الإدخال
             $('#phone').value = '';
             $('#clientName').value = '';
             $('#invoiceNo').value = '';
             $('#animalNo').value = '';
-            $('#sticker').value = '';
-            $('#qty').value = '';
-            $('#animalType').value = '';
-            $('#cutType').value = '';
+            $('#sticker').selectedIndex = 0;
+            $('#qty').selectedIndex = 0;
+            $('#animalType').selectedIndex = 0;
+            $('#cutType').selectedIndex = 0;
             $('#price').value = '0';
             $('#total').value = '';
             $('#addons').selectedIndex = -1;
-            $('#payment').value = 'بطاقة';
+            $('#payment').selectedIndex = 0;
+            
+            // إعادة تعيين الموقع
+            $('#site').value = currentSite;
             
             // إزالة علامات الحقول المطلوبة
             $$('.required').forEach(el => el.classList.remove('required'));
+            
+            // مسح البيانات الحالية غير المحفوظة
+            state.currentEntry = null;
+            
+            // إعادة تعيين حالة التعديل
+            state.editingIndex = null;
+            $('#btnAdd').textContent = 'إضافة ذبيحة';
+            $('#btnAdd').classList.remove('save-btn');
+            $('#btnAdd').classList.add('b-green');
         }
 
         function validateForm() {
@@ -1457,26 +1539,43 @@
                 payment: $('#payment').value
             };
             
+            // تخزين البيانات الحالية فقط دون حفظ في القائمة
+            state.currentEntry = e;
+            
             upsertClient(e.phone, e.clientName);
             
+            // لا يتم حفظ البيانات في state.data.entries هنا
+            // فقط تحديث البطاقة الغذائية
+            
+            save();
+            renderCurrent();
+            renderInvoices();
+        }
+
+        function saveNewSlaughter() {
+            if (!state.currentEntry) {
+                alert('لا توجد بيانات لحفظها، استخدم زر "إضافة ذبيحة" أولاً');
+                return;
+            }
+            
+            // حفظ البيانات الحالية في القائمة
             if (state.editingIndex !== null) {
-                state.data.entries[state.editingIndex] = e;
+                state.data.entries[state.editingIndex] = state.currentEntry;
                 state.editingIndex = null;
                 $('#btnAdd').textContent = 'إضافة ذبيحة';
                 $('#btnAdd').classList.remove('save-btn');
                 $('#btnAdd').classList.add('b-green');
             } else {
-                state.data.entries.push(e);
+                state.data.entries.push(state.currentEntry);
             }
             
             save();
             renderCurrent();
             renderInvoices();
-            alert('تم الحفظ');
+            alert('تم حفظ البيانات بنجاح');
             
-            if (state.editingIndex === null) {
-                clearInputFields();
-            }
+            // مسح الحقول بعد الحفظ
+            clearInputFields();
         }
 
         function expiryDays(a) {
@@ -1497,8 +1596,7 @@
                         <tr><td style="padding:4px;width:30%;border:1px solid #000"><b>التاريخ</b></td><td style="padding:4px;border:1px solid #000">${dayjs(e.date).format('YYYY-MM-DD HH:mm')}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>رقم الفاتورة</b></td><td style="padding:4px;border:1px solid #000">${e.invoiceNo}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>رقم الذبيحة</b></td><td style="padding:4px;border:1px solid #000">${e.animalNo}</td></tr>
-                        <tr><td style="padding:4px;border:1px solid #000"><b>رقم الاستيكر</b></td><td style="padding:4px;border:1px solid #000">${e.sticker}</td></tr>
-                        <tr><td style="padding:4px;border:1px solid #000"><b>نوع الذبيحة</b></td><td style="padding:4px;border:1px solid #000">${e.animalType}</td></tr>
+                        <tr><td style="padding:4px;border:1px solid  #000"><b>نوع الذبيحة</b></td><td style="padding:4px;border:1px solid #000">${e.animalType}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>نوع التقطيع</b></td><td style="padding:4px;border:1px solid #000">${e.cutType}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>العدد</b></td><td style="padding:4px;border:1px solid #000">${e.qty}</td></tr>
                         <tr><td style="padding:4px;border:1px solid #000"><b>السعر</b></td><td style="padding:4px;border:1px solid #000">${e.price} درهم</td></tr>
@@ -1553,19 +1651,14 @@
             </div>`;
         }
 
-        function showPrintPreview(content, isFoodCard = false) {
-            $('#printPreviewBody').innerHTML = content;
-            $('#printPreviewModal').style.display = 'flex';
+        function printInvoiceLast() {
+            const e = state.data.entries[state.data.entries.length - 1];
+            if (!e) return alert('لا بيانات');
             
-            // حفظ نوع المحتوى للطباعة لاحقاً
-            $('#printPreviewModal').dataset.printType = isFoodCard ? 'foodcard' : 'invoice';
-        }
-
-        function doPrint() {
-            const printType = $('#printPreviewModal').dataset.printType;
+            const content = buildInvoice(e);
             const printContent = document.createElement('div');
             printContent.className = 'print-content';
-            printContent.innerHTML = $('#printPreviewBody').innerHTML;
+            printContent.innerHTML = content;
             
             document.body.appendChild(printContent);
             
@@ -1578,19 +1671,6 @@
             window.print(printSettings);
             
             document.body.removeChild(printContent);
-            $('#printPreviewModal').style.display = 'none';
-            
-            if (printType === 'foodcard') {
-                clearInputFields();
-            }
-        }
-
-        function printInvoiceLast() {
-            const e = state.data.entries[state.data.entries.length - 1];
-            if (!e) return alert('لا بيانات');
-            
-            const content = buildInvoice(e);
-            showPrintPreview(content, false);
         }
         
         function printInvoiceFromTable(index) {
@@ -1598,15 +1678,34 @@
             if (!e) return;
             
             const content = buildInvoice(e);
-            showPrintPreview(content, false);
+            const printContent = document.createElement('div');
+            printContent.className = 'print-content';
+            printContent.innerHTML = content;
+            
+            document.body.appendChild(printContent);
+            
+            window.print();
+            
+            document.body.removeChild(printContent);
         }
 
         function printFoodCardLast() {
-            const e = state.data.entries[state.data.entries.length - 1];
+            // استخدام البيانات الحالية غير المحفوظة إذا كانت موجودة
+            const e = state.currentEntry || state.data.entries[state.data.entries.length - 1];
             if (!e) return alert('لا بيانات');
             
             const content = buildFoodCard(e);
-            showPrintPreview(content, true);
+            const printContent = document.createElement('div');
+            printContent.className = 'print-content';
+            printContent.innerHTML = content;
+            
+            document.body.appendChild(printContent);
+            
+            window.print();
+            
+            document.body.removeChild(printContent);
+            
+            // لا يتم مسح الحقول بعد الطباعة (حسب المطلوب)
         }
 
         function filter(site, from, to) {
@@ -1710,33 +1809,93 @@
             const from = $('#fltFrom2').value;
             const to = $('#fltTo2').value;
             const rows = filter(site, from, to);
-            const grouped = rows.reduce((acc, e) => {
-                const key = `${e.animalType}-${e.cutType}`;
-                if (!acc[key]) acc[key] = {
-                    animalType: e.animalType,
-                    cutType: e.cutType,
-                    count: 0,
-                    qty: 0,
-                    total: 0
-                };
-                acc[key].count++;
-                acc[key].qty += e.qty;
-                acc[key].total += e.total;
-                return acc;
-            }, {});
-            const stats = Object.values(grouped);
+            
+            // تجميع البيانات للجدول الرئيسي مع دمج الخلايا
+            const groupedByAnimal = {};
+            rows.forEach(e => {
+                if (!groupedByAnimal[e.animalType]) {
+                    groupedByAnimal[e.animalType] = [];
+                }
+                groupedByAnimal[e.animalType].push(e);
+            });
+            
             const tb = $('#tblStats tbody');
             tb.innerHTML = '';
-            stats.forEach(s => {
+            
+            // ملء الجدول الرئيسي مع دمج الخلايا
+            Object.keys(groupedByAnimal).forEach(animalType => {
+                const animalRows = groupedByAnimal[animalType];
+                let firstRow = true;
+                
+                animalRows.forEach((e, index) => {
+                    const tr = document.createElement('tr');
+                    
+                    if (firstRow) {
+                        // الصف الأول يحتوي على خلية مدمجة لنوع الذبيحة
+                        tr.innerHTML = `
+                            <td rowspan="${animalRows.length}">${animalType}</td>
+                            <td>${e.cutType}</td>
+                            <td>1</td>
+                            <td>${e.qty}</td>
+                            <td>${e.total.toFixed(2)}</td>
+                        `;
+                        firstRow = false;
+                    } else {
+                        // الصفوف التالية لا تحتوي على خلية نوع الذبيحة
+                        tr.innerHTML = `
+                            <td>${e.cutType}</td>
+                            <td>1</td>
+                            <td>${e.qty}</td>
+                            <td>${e.total.toFixed(2)}</td>
+                        `;
+                    }
+                    
+                    tb.appendChild(tr);
+                });
+            });
+            
+            // إحصائية طريقة الدفع
+            const paymentStats = rows.reduce((acc, e) => {
+                if (!acc[e.payment]) {
+                    acc[e.payment] = { count: 0, total: 0 };
+                }
+                acc[e.payment].count++;
+                acc[e.payment].total += e.total;
+                return acc;
+            }, {});
+            
+            const paymentTb = $('#tblPaymentStats tbody');
+            paymentTb.innerHTML = '';
+            
+            Object.keys(paymentStats).forEach(payment => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                <td>${s.animalType}</td>
-                <td>${s.cutType}</td>
-                <td>${s.count}</td>
-                <td>${s.qty}</td>
-                <td>${s.total.toFixed(2)}</td>
-            `;
-                tb.appendChild(tr);
+                    <td>${payment}</td>
+                    <td>${paymentStats[payment].count}</td>
+                    <td>${paymentStats[payment].total.toFixed(2)}</td>
+                `;
+                paymentTb.appendChild(tr);
+            });
+            
+            // إحصائية نوع الحيوان
+            const animalStats = rows.reduce((acc, e) => {
+                if (!acc[e.animalType]) {
+                    acc[e.animalType] = 0;
+                }
+                acc[e.animalType] += e.qty;
+                return acc;
+            }, {});
+            
+            const animalTb = $('#tblAnimalStats tbody');
+            animalTb.innerHTML = '';
+            
+            Object.keys(animalStats).forEach(animal => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${animal}</td>
+                    <td>${animalStats[animal]}</td>
+                `;
+                animalTb.appendChild(tr);
             });
         }
 
@@ -1767,8 +1926,38 @@
                         ${Array.from($('#tblStats tbody').children).map(tr => tr.outerHTML).join('')}
                     </tbody>
                 </table>
+                
+                <div style="display:flex;margin-top:20px;gap:15px">
+                    <table style="flex:1;border-collapse:collapse">
+                        <caption style="font-weight:bold;margin-bottom:8px">إحصائية طريقة الدفع</caption>
+                        <thead>
+                            <tr>
+                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">طريقة الدفع</th>
+                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">عدد المعاملات</th>
+                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">المبلغ الإجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Array.from($('#tblPaymentStats tbody').children).map(tr => tr.outerHTML).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <table style="flex:1;border-collapse:collapse">
+                        <caption style="font-weight:bold;margin-bottom:8px">إحصائية نوع الحيوان</caption>
+                        <thead>
+                            <tr>
+                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع الحيوان</th>
+                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">العدد الكلي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Array.from($('#tblAnimalStats tbody').children).map(tr => tr.outerHTML).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
                 <div class="report-footer">
-                    <p>عدد الأنواع: ${$('#tblStats tbody').children.length}</p>
+                    <p>عدد السجلات: ${$('#tblStats tbody').children.length}</p>
                 </div>
             </div>`;
             
@@ -2003,6 +2192,9 @@
             if (e.target.id === 'btnAdd') {
                 addEntry();
             }
+            if (e.target.id === 'btnNewSlaughter') {
+                saveNewSlaughter();
+            }
             if (e.target.id === 'btnPrintFoodCard') {
                 printFoodCardLast();
             }
@@ -2158,25 +2350,6 @@
             if (e.target.id === 'btnResetData') {
                 resetData();
             }
-            
-            if (e.target.id === 'closePreview' || e.target.id === 'cancelPrint') {
-                $('#printPreviewModal').style.display = 'none';
-            }
-            
-            if (e.target.id === 'doPrint') {
-                doPrint();
-            }
-            
-            const cell = e.target.closest('#tblInvoices tbody td');
-            if (cell && !e.target.closest('button') && state.screen === 'invoices') {
-                const row = cell.parentElement;
-                const rowIndex = Array.from(row.parentElement.children).indexOf(row);
-                const cellIndex = Array.from(row.children).indexOf(cell);
-                
-                if (cellIndex > 0 && cellIndex < 8) {
-                    startEdit(rowIndex, cellIndex, cell);
-                }
-            }
         });
         
         document.addEventListener('keydown', e => {
@@ -2203,7 +2376,11 @@
 
         $('#qty').addEventListener('input', calcTotal);
         $('#price').addEventListener('input', calcTotal);
-        $('#site').addEventListener('change', guessInvoice);
+        $('#site').addEventListener('change', function() {
+            state.currentSite = this.value;
+            guessInvoice();
+            save();
+        });
         $('#phone').addEventListener('blur', onPhone);
 
         $('#imgWelcome').addEventListener('change', e => handleFile(e, 'welcome'));
@@ -2221,7 +2398,8 @@
                 logged: state.logged,
                 loggedId: state.loggedId,
                 role: state.role,
-                screen: state.screen
+                screen: state.screen,
+                currentSite: state.currentSite
             }));
         });
     </script>
