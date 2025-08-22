@@ -379,8 +379,6 @@
             body, html {
                 height: auto;
                 overflow: visible !important;
-                margin: 0;
-                padding: 0;
             }
             
             body * {
@@ -444,9 +442,9 @@
                 border: 2.5pt solid #000;
             }
             
-            /* تنسيق خاص للفاتورة */
+            /* طباعة الفاتورة - المحتوى فقط */
             .invoice-print {
-                width: 100%;
+                width: auto;
                 height: auto;
                 padding: 0;
                 border: none;
@@ -473,8 +471,8 @@
 
         /* تعديلات الطباعة */
         .invoice-print {
-            width: 100%;
-            height: auto;
+            width: 7in;
+            height: 5in;
             padding: 0.2in;
             border: 1px solid #000;
             margin: 0 auto;
@@ -705,24 +703,48 @@
             border: 2px solid var(--cyan-btn-color);
         }
         
-        /* جداول الإحصاءات أسفل الجدول الرئيسي */
-        .stats-summary {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
+        /* جداول الإحصاء أسفل الجدول الرئيسي */
+        .summary-tables {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-top: 20px;
         }
         
-        .stats-table {
-            flex: 1;
-            min-width: 300px;
-            border-collapse: collapse;
+        .summary-table {
             border: 2px solid #000;
+            border-collapse: collapse;
+            width: 100%;
         }
         
-        .stats-table th, .stats-table td {
+        .summary-table th,
+        .summary-table td {
             border: 1px solid #000;
             padding: 8px;
+            text-align: center;
+        }
+        
+        .summary-table th {
+            background-color: #f4eee6;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-tables {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* تنسيق خاص لجدول الإحصاء مع الخلايا المدمجة */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .stats-table th,
+        .stats-table td {
+            border: 2px solid #000;
+            padding: 10px;
             text-align: center;
         }
         
@@ -731,11 +753,9 @@
             font-weight: bold;
         }
         
-        .stats-table caption {
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #5b3d1f;
+        .stats-table .merged-cell {
+            vertical-align: middle;
+            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -864,7 +884,7 @@
                                     <select id="cutType" required></select>
                                 </div>
                                 <div>
-                                    <label class="required-label">السعر (درهم)</label>
+                                    <label class="required-label">السعر </label>
                                     <input id="price" type="number" min="0" step="0.5" value="0" required>
                                 </div>
                                 <div>
@@ -884,13 +904,13 @@
                         <div class="form-section">
                             <h3 class="section-title">ملحقات إضافية</h3>
                             <div>
-                                    <label>ملحقات</label>
-                                    <select id="addons" multiple>
-                                        <option>كرش مصران كوارع</option>
-                                        <option>كوارع</option>
-                                        <option>كرش مصران</option>
-                                    </select>
-                                </div>
+                                <label>ملحقات</label>
+                                <select id="addons" multiple>
+                                    <option>كرش مصران كوارع</option>
+                                    <option>كوارع</option>
+                                    <option>كرش مصران</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="row" style="margin-top:20px;gap:15px;justify-content:center">
@@ -977,7 +997,7 @@
                 </div>
             </div>
             <div class="table-container">
-                <table id="tblStats">
+                <table class="stats-table" id="tblStats">
                     <thead>
                         <tr>
                             <th>نوع الذبيحة</th>
@@ -991,36 +1011,42 @@
                 </table>
             </div>
             
-            <!-- جداول الإحصاءات أسفل الجدول الرئيسي -->
-            <div class="stats-summary">
-                <table class="stats-table" id="tblPaymentStats">
-                    <caption>إحصائية طريقة الدفع</caption>
-                    <thead>
-                        <tr>
-                            <th>طريقة الدفع</th>
-                            <th>عدد المعاملات</th>
-                            <th>المبلغ الإجمالي</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+            <!-- جداول الإحصاء الإضافية -->
+            <div class="summary-tables">
+                <!-- جدول إحصائية طريقة الدفع -->
+                <div class="card">
+                    <h3 class="h-center">إحصائية طريقة الدفع</h3>
+                    <table class="summary-table" id="tblPaymentStats">
+                        <thead>
+                            <tr>
+                                <th>طريقة الدفع</th>
+                                <th>عدد الذبائح</th>
+                                <th>المبلغ الإجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
                 
-                <table class="stats-table" id="tblAnimalStats">
-                    <caption>إحصائية نوع الحيوان</caption>
-                    <thead>
-                        <tr>
-                            <th>نوع الحيوان</th>
-                            <th>العدد الكلي</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <!-- جدول إحصائية نوع الذبيحة -->
+                <div class="card">
+                    <h3 class="h-center">إحصائية نوع الحيوان</h3>
+                    <table class="summary-table" id="tblAnimalStats">
+                        <thead>
+                            <tr>
+                                <th>نوع الذبيحة</th>
+                                <th>العدد الكلي</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="invoices" class="screen">
             <div class="row" style="flex-wrap:wrap;">
-                <input id="searchPhone" placeholder="بحث برقم التلفون" style="max-width:250px;height:45px;font-size:14px">
+                <input id="searchPhone" placeholder="بحث بررقم التلفون" style="max-width:250px;height:45px;font-size:14px">
                 <button class="btn b-amber" id="btnSearchInvoices" style="height:45px">بحث</button>
             </div>
             <div class="table-container">
@@ -1205,7 +1231,7 @@
     </div>
 
     <script>
-        const DBKEY = 'slaughter-app-v6';
+        const DBKEY = 'slaughter-app-v8';
         const state = {
             screen: 'welcome',
             logged: false,
@@ -1215,8 +1241,8 @@
             editingIndex: null,
             editingRow: null,
             editingCell: null,
-            currentEntry: null, // إضافة لتخزين البيانات الحالية قبل الحفظ
-            currentSite: 'الكل' // إضافة لتخزين الموقع الحالي
+            currentEntry: null,
+            lastInvoiceNumbers: {} // تخزين آخر أرقام الفواتير لكل موقع
         };
 
         // تحميل البيانات المحفوظة عند بدء التشغيل
@@ -1234,7 +1260,12 @@
                 state.loggedId = parsed.loggedId || null;
                 state.role = parsed.role || 'user';
                 state.screen = parsed.screen || 'login';
-                state.currentSite = parsed.currentSite || 'الكل';
+            }
+            
+            // تحميل أرقام الفواتير الأخيرة
+            const savedInvoiceNumbers = localStorage.getItem('slaughter-app-invoice-numbers');
+            if (savedInvoiceNumbers) {
+                state.lastInvoiceNumbers = JSON.parse(savedInvoiceNumbers);
             }
         }
 
@@ -1244,9 +1275,9 @@
                 logged: state.logged,
                 loggedId: state.loggedId,
                 role: state.role,
-                screen: state.screen,
-                currentSite: state.currentSite
+                screen: state.screen
             }));
+            localStorage.setItem('slaughter-app-invoice-numbers', JSON.stringify(state.lastInvoiceNumbers));
         }
 
         function getDefaults() {
@@ -1350,7 +1381,7 @@
 
         function refreshSites() {
             populate($('#site'), ['الكل', ...state.data.sites.map(s => s.name)]);
-            $('#site').value = state.currentSite;
+            $('#site').value = 'الكل'; // تعيين القيمة الافتراضية
             populate($('#fltSite'), ['الكل', ...state.data.sites.map(s => s.name)]);
             populate($('#fltSite2'), ['الكل', ...state.data.sites.map(s => s.name)]);
         }
@@ -1425,12 +1456,37 @@
             $('#total').value = (q * p).toFixed(2);
         }
 
-        function guessInvoice() {
-            const s = $('#site').value;
-            const site = state.data.sites.find(x => x.name === s);
-            const pref = site?.prefix || '';
-            const seq = String(state.data.entries.length + 1).padStart(5, '0');
-            $('#invoiceNo').value = `${pref}${seq}`;
+        function generateInvoiceNumber(siteName) {
+            const site = state.data.sites.find(s => s.name === siteName);
+            if (!site) return '';
+            
+            const prefix = site.prefix || 'GHSH-';
+            
+            // إذا لم يكن هناك رقم فاتورة سابق لهذا الموقع، ابحث عن آخر رقم فاتورة
+            if (!state.lastInvoiceNumbers[siteName]) {
+                // البحث عن آخر رقم فاتورة في البيانات المحفوظة
+                const siteEntries = state.data.entries.filter(e => e.site === siteName);
+                if (siteEntries.length > 0) {
+                    // الحصول على أرقام الفواتير واستخراج الأرقام منها
+                    const invoiceNumbers = siteEntries.map(e => {
+                        const match = e.invoiceNo.match(/\d+$/);
+                        return match ? parseInt(match[0]) : 0;
+                    });
+                    
+                    // العثور على أكبر رقم
+                    const maxNumber = Math.max(...invoiceNumbers);
+                    state.lastInvoiceNumbers[siteName] = maxNumber;
+                } else {
+                    state.lastInvoiceNumbers[siteName] = 0;
+                }
+            }
+            
+            // زيادة الرقم وتخزينه
+            state.lastInvoiceNumbers[siteName]++;
+            save();
+            
+            // إرجاع الرقم الجديد مع البادئة
+            return `${prefix}${String(state.lastInvoiceNumbers[siteName]).padStart(3, '0')}`;
         }
 
         function upsertClient(p, n) {
@@ -1466,13 +1522,11 @@
         }
 
         function clearInputFields() {
-            // حفظ الموقع الحالي
+            // مسح جميع الحقول في نموذج الإدخال باستثناء الموقع
             const currentSite = $('#site').value;
             
-            // مسح جميع الحقول في نموذج الإدخال
             $('#phone').value = '';
             $('#clientName').value = '';
-            $('#invoiceNo').value = '';
             $('#animalNo').value = '';
             $('#sticker').selectedIndex = 0;
             $('#qty').selectedIndex = 0;
@@ -1483,8 +1537,12 @@
             $('#addons').selectedIndex = -1;
             $('#payment').selectedIndex = 0;
             
-            // إعادة تعيين الموقع
-            $('#site').value = currentSite;
+            // توليد رقم فاتورة جديد بناءً على الموقع الحالي
+            if (currentSite && currentSite !== 'الكل') {
+                $('#invoiceNo').value = generateInvoiceNumber(currentSite);
+            } else {
+                $('#invoiceNo').value = '';
+            }
             
             // إزالة علامات الحقول المطلوبة
             $$('.required').forEach(el => el.classList.remove('required'));
@@ -1810,43 +1868,61 @@
             const to = $('#fltTo2').value;
             const rows = filter(site, from, to);
             
-            // تجميع البيانات للجدول الرئيسي مع دمج الخلايا
-            const groupedByAnimal = {};
-            rows.forEach(e => {
-                if (!groupedByAnimal[e.animalType]) {
-                    groupedByAnimal[e.animalType] = [];
+            // تجميع البيانات حسب نوع الذبيحة ونوع التقطيع
+            const grouped = rows.reduce((acc, e) => {
+                const key = `${e.animalType}-${e.cutType}`;
+                if (!acc[key]) acc[key] = {
+                    animalType: e.animalType,
+                    cutType: e.cutType,
+                    count: 0,
+                    qty: 0,
+                    total: 0
+                };
+                acc[key].count++;
+                acc[key].qty += e.qty;
+                acc[key].total += e.total;
+                return acc;
+            }, {});
+            
+            // تحويل الكائن إلى مصفوفة
+            const statsArray = Object.values(grouped);
+            
+            // تجميع حسب نوع الذبيحة لحساب عدد الصفوف لكل نوع
+            const animalGroups = {};
+            statsArray.forEach(stat => {
+                if (!animalGroups[stat.animalType]) {
+                    animalGroups[stat.animalType] = [];
                 }
-                groupedByAnimal[e.animalType].push(e);
+                animalGroups[stat.animalType].push(stat);
             });
             
+            // بناء جدول الإحصاء مع دمج الخلايا
             const tb = $('#tblStats tbody');
             tb.innerHTML = '';
             
-            // ملء الجدول الرئيسي مع دمج الخلايا
-            Object.keys(groupedByAnimal).forEach(animalType => {
-                const animalRows = groupedByAnimal[animalType];
-                let firstRow = true;
+            Object.keys(animalGroups).forEach(animalType => {
+                const group = animalGroups[animalType];
+                const rowCount = group.length;
                 
-                animalRows.forEach((e, index) => {
+                group.forEach((stat, index) => {
                     const tr = document.createElement('tr');
                     
-                    if (firstRow) {
-                        // الصف الأول يحتوي على خلية مدمجة لنوع الذبيحة
+                    if (index === 0) {
+                        // الصف الأول لكل نوع ذبيحة - ندمج الخلايا في العمود الأول
                         tr.innerHTML = `
-                            <td rowspan="${animalRows.length}">${animalType}</td>
-                            <td>${e.cutType}</td>
-                            <td>1</td>
-                            <td>${e.qty}</td>
-                            <td>${e.total.toFixed(2)}</td>
+                            <td rowspan="${rowCount}" class="merged-cell">${stat.animalType}</td>
+                            <td>${stat.cutType}</td>
+                            <td>${stat.count}</td>
+                            <td>${stat.qty}</td>
+                            <td>${stat.total.toFixed(2)}</td>
                         `;
-                        firstRow = false;
                     } else {
-                        // الصفوف التالية لا تحتوي على خلية نوع الذبيحة
+                        // الصفوف التالية لنفس نوع الذبيحة - بدون عمود نوع الذبيحة
                         tr.innerHTML = `
-                            <td>${e.cutType}</td>
-                            <td>1</td>
-                            <td>${e.qty}</td>
-                            <td>${e.total.toFixed(2)}</td>
+                            <td>${stat.cutType}</td>
+                            <td>${stat.count}</td>
+                            <td>${stat.qty}</td>
+                            <td>${stat.total.toFixed(2)}</td>
                         `;
                     }
                     
@@ -1854,11 +1930,9 @@
                 });
             });
             
-            // إحصائية طريقة الدفع
+            // تحديث إحصائية طريقة الدفع
             const paymentStats = rows.reduce((acc, e) => {
-                if (!acc[e.payment]) {
-                    acc[e.payment] = { count: 0, total: 0 };
-                }
+                if (!acc[e.payment]) acc[e.payment] = { count: 0, total: 0 };
                 acc[e.payment].count++;
                 acc[e.payment].total += e.total;
                 return acc;
@@ -1866,35 +1940,31 @@
             
             const paymentTb = $('#tblPaymentStats tbody');
             paymentTb.innerHTML = '';
-            
-            Object.keys(paymentStats).forEach(payment => {
+            Object.entries(paymentStats).forEach(([payment, data]) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${payment}</td>
-                    <td>${paymentStats[payment].count}</td>
-                    <td>${paymentStats[payment].total.toFixed(2)}</td>
-                `;
+                <td>${payment}</td>
+                <td>${data.count}</td>
+                <td>${data.total.toFixed(2)}</td>
+            `;
                 paymentTb.appendChild(tr);
             });
             
-            // إحصائية نوع الحيوان
+            // تحديث إحصائية نوع الحيوان
             const animalStats = rows.reduce((acc, e) => {
-                if (!acc[e.animalType]) {
-                    acc[e.animalType] = 0;
-                }
+                if (!acc[e.animalType]) acc[e.animalType] = 0;
                 acc[e.animalType] += e.qty;
                 return acc;
             }, {});
             
             const animalTb = $('#tblAnimalStats tbody');
             animalTb.innerHTML = '';
-            
-            Object.keys(animalStats).forEach(animal => {
+            Object.entries(animalStats).forEach(([animal, total]) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${animal}</td>
-                    <td>${animalStats[animal]}</td>
-                `;
+                <td>${animal}</td>
+                <td>${total}</td>
+            `;
                 animalTb.appendChild(tr);
             });
         }
@@ -1927,37 +1997,43 @@
                     </tbody>
                 </table>
                 
-                <div style="display:flex;margin-top:20px;gap:15px">
-                    <table style="flex:1;border-collapse:collapse">
-                        <caption style="font-weight:bold;margin-bottom:8px">إحصائية طريقة الدفع</caption>
-                        <thead>
-                            <tr>
-                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">طريقة الدفع</th>
-                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">عدد المعاملات</th>
-                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">المبلغ الإجمالي</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${Array.from($('#tblPaymentStats tbody').children).map(tr => tr.outerHTML).join('')}
-                        </tbody>
-                    </table>
+                <div style="margin-top:30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- جدول إحصائية طريقة الدفع -->
+                    <div>
+                        <h3 style="text-align:center;margin-bottom:10px">إحصائية طريقة الدفع</h3>
+                        <table style="width:100%;border-collapse:collapse">
+                            <thead>
+                                <tr>
+                                    <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">طريقة الدفع</th>
+                                    <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">عدد الذبائح</th>
+                                    <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">المبلغ الإجمالي</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Array.from($('#tblPaymentStats tbody').children).map(tr => tr.outerHTML).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                     
-                    <table style="flex:1;border-collapse:collapse">
-                        <caption style="font-weight:bold;margin-bottom:8px">إحصائية نوع الحيوان</caption>
-                        <thead>
-                            <tr>
-                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع الحيوان</th>
-                                <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">العدد الكلي</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${Array.from($('#tblAnimalStats tbody').children).map(tr => tr.outerHTML).join('')}
-                        </tbody>
-                    </table>
+                    <!-- جدول إحصائية نوع الذبيحة -->
+                    <div>
+                        <h3 style="text-align:center;margin-bottom:10px">إحصائية نوع الذبيحة</h3>
+                        <table style="width:100%;border-collapse:collapse">
+                            <thead>
+                                <tr>
+                                    <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">نوع الحيوان</th>
+                                    <th style="border:2.5pt solid #000;padding:8px;font-weight:bold">العدد الكلي</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Array.from($('#tblAnimalStats tbody').children).map(tr => tr.outerHTML).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 
                 <div class="report-footer">
-                    <p>عدد السجلات: ${$('#tblStats tbody').children.length}</p>
+                    <p>عدد الأنواع: ${Object.keys(animalGroups).length}</p>
                 </div>
             </div>`;
             
@@ -2083,6 +2159,7 @@
             if (confirm('هل أنت متأكد من أنك تريد مسح جميع السجلات؟ لا يمكن التراجع عن هذا الإجراء.')) {
                 state.data.entries = [];
                 state.data.clients = {};
+                state.lastInvoiceNumbers = {};
                 save();
                 renderCurrent();
                 renderInvoices();
@@ -2137,6 +2214,12 @@
             renderCurrent();
             renderInvoices();
             $('#now').textContent = dayjs().format('dddd, D MMMM YYYY');
+            
+            // توليد رقم فاتورة أولي عند التحميل
+            const currentSite = $('#site').value;
+            if (currentSite && currentSite !== 'الكل') {
+                $('#invoiceNo').value = generateInvoiceNumber(currentSite);
+            }
         }
 
         function handleFile(e, target) {
@@ -2377,9 +2460,13 @@
         $('#qty').addEventListener('input', calcTotal);
         $('#price').addEventListener('input', calcTotal);
         $('#site').addEventListener('change', function() {
-            state.currentSite = this.value;
-            guessInvoice();
-            save();
+            // عند تغيير الموقع، توليد رقم فاتورة جديد
+            const siteName = this.value;
+            if (siteName && siteName !== 'الكل') {
+                $('#invoiceNo').value = generateInvoiceNumber(siteName);
+            } else {
+                $('#invoiceNo').value = '';
+            }
         });
         $('#phone').addEventListener('blur', onPhone);
 
@@ -2398,8 +2485,7 @@
                 logged: state.logged,
                 loggedId: state.loggedId,
                 role: state.role,
-                screen: state.screen,
-                currentSite: state.currentSite
+                screen: state.screen
             }));
         });
     </script>
